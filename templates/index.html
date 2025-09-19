@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saarthi AI - Your Path to Professional Success</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-compass me-2"></i>
+                Saarthi AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/resume-builder">Resume Builder</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section bg-gradient text-white py-5">
+        <div class="container">
+            <div class="row align-items-center min-vh-50">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Your <span class="text-warning">Saarthi</span> to Success
+                    </h1>
+                    <p class="lead mb-4">
+                        Stop feeling overwhelmed by hundreds of internship options. Get personalized recommendations that match your profile perfectly.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <div class="feature-badge">
+                            <i class="bi bi-lightning-fill text-warning me-2"></i>Smart Matching
+                        </div>
+                        <div class="feature-badge">
+                            <i class="bi bi-heart-fill text-danger me-2"></i>Personalized
+                        </div>
+                        <div class="feature-badge">
+                            <i class="bi bi-share-fill text-success me-2"></i>Shareable
+                        </div>
+                    </div>
+                    <button class="btn btn-warning btn-lg px-4 fw-semibold" onclick="scrollToForm()">
+                        Find My Opportunities
+                    </button>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="hero-illustration">
+                        <i class="bi bi-person-workspace display-1 text-warning opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Form Section -->
+    <section class="py-5" id="search-form">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-4 p-md-5">
+                            <div class="text-center mb-4">
+                                <h2 class="h3 fw-bold text-primary mb-2">Tell Us About Yourself</h2>
+                                <p class="text-muted">We'll find the perfect internships for you in seconds</p>
+                            </div>
+
+                            <!-- User Input Form -->
+                            <form id="searchForm" class="needs-validation" novalidate>
+                                <!-- Education Level -->
+                                <div class="mb-4">
+                                    <label for="education" class="form-label fw-semibold">
+                                        <i class="bi bi-mortarboard me-2 text-primary"></i>Education Level
+                                    </label>
+                                    <select class="form-select form-select-lg" id="education" name="education" required>
+                                        <option value="">Select your education level</option>
+                                        <option value="B.Tech/B.E">B.Tech/B.E (Engineering)</option>
+                                        <option value="B.Com">B.Com (Commerce)</option>
+                                        <option value="BBA">BBA (Business Administration)</option>
+                                        <option value="B.Sc">B.Sc (Science)</option>
+                                        <option value="BA">BA (Arts)</option>
+                                        <option value="BCA">BCA (Computer Applications)</option>
+                                        <option value="M.Tech/M.E">M.Tech/M.E (Engineering)</option>
+                                        <option value="MBA">MBA</option>
+                                        <option value="M.Sc">M.Sc (Science)</option>
+                                        <option value="Other Graduate">Other Graduate Degree</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select your education level.
+                                    </div>
+                                </div>
+
+                                <!-- Interests -->
+                                <div class="mb-4">
+                                    <label for="interests" class="form-label fw-semibold">
+                                        <i class="bi bi-star me-2 text-warning"></i>Areas of Interest
+                                    </label>
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="Technology" id="tech">
+                                                <label class="form-check-label" for="tech">Technology & IT</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="Banking" id="banking">
+                                                <label class="form-check-label" for="banking">Banking & Finance</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="Healthcare" id="healthcare">
+                                                <label class="form-check-label" for="healthcare">Healthcare</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="Marketing" id="marketing">
+                                                <label class="form-check-label" for="marketing">Marketing & Sales</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="Social Work" id="social">
+                                                <label class="form-check-label" for="social">Social Work</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="Environment" id="environment">
+                                                <label class="form-check-label" for="environment">Environment</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="Education" id="education_interest">
+                                                <label class="form-check-label" for="education_interest">Education</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="Agriculture" id="agriculture">
+                                                <label class="form-check-label" for="agriculture">Agriculture</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-text">Select all that apply to you</div>
+                                </div>
+
+                                <!-- Skills -->
+                                <div class="mb-4">
+                                    <label for="skills" class="form-label fw-semibold">
+                                        <i class="bi bi-tools me-2 text-success"></i>Your Skills
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="skills" name="skills" 
+                                           placeholder="e.g., Python, Excel, Communication, Project Management" 
+                                           aria-describedby="skillsHelp">
+                                    <div id="skillsHelp" class="form-text">
+                                        Enter your skills separated by commas
+                                    </div>
+                                </div>
+
+                                <!-- Preferred Location -->
+                                <div class="mb-4">
+                                    <label for="location" class="form-label fw-semibold">
+                                        <i class="bi bi-geo-alt me-2 text-info"></i>Preferred Location
+                                    </label>
+                                    <select class="form-select form-select-lg" id="location" name="location" required>
+                                        <option value="">Select preferred location</option>
+                                        <option value="Delhi">Delhi NCR</option>
+                                        <option value="Mumbai">Mumbai</option>
+                                        <option value="Bangalore">Bangalore</option>
+                                        <option value="Chennai">Chennai</option>
+                                        <option value="Hyderabad">Hyderabad</option>
+                                        <option value="Pune">Pune</option>
+                                        <option value="Kolkata">Kolkata</option>
+                                        <option value="Ahmedabad">Ahmedabad</option>
+                                        <option value="Jaipur">Jaipur</option>
+                                        <option value="Lucknow">Lucknow</option>
+                                        <option value="Bhopal">Bhopal</option>
+                                        <option value="Chandigarh">Chandigarh</option>
+                                        <option value="Other">Other City</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select your preferred location.
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg fw-semibold" id="searchBtn">
+                                        <i class="bi bi-search me-2"></i>
+                                        <span class="btn-text">Find My Perfect Internships</span>
+                                        <span class="spinner-border spinner-border-sm ms-2 d-none" id="loadingSpinner"></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="py-5 bg-light" id="results-section">
+        <div class="container">
+            <!-- Results Header -->
+            <div class="text-center mb-5">
+                <h2 class="h3 fw-bold text-primary mb-3">Your Personalized Recommendations</h2>
+                <p class="text-muted" id="results-subtitle">Based on your profile, here are the best matches for you</p>
+                
+                <!-- Share Link -->
+                <div class="mt-3" id="share-section" style="display: none;">
+                    <div class="alert alert-success d-inline-flex align-items-center">
+                        <i class="bi bi-share me-2"></i>
+                        <span>Share these results: </span>
+                        <input type="text" class="form-control form-control-sm ms-2" id="shareUrl" readonly style="width: 300px;">
+                        <button class="btn btn-sm btn-outline-success ms-2" onclick="copyShareUrl()">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Cards Container -->
+            <div class="row g-4" id="resultsContainer">
+                <!-- Results will be populated by JavaScript -->
+            </div>
+
+            <!-- No Results Message -->
+            <div class="text-center d-none" id="no-results">
+                <div class="mb-4">
+                    <i class="bi bi-search display-1 text-muted"></i>
+                </div>
+                <h3 class="h4 text-muted mb-3">No matches found</h3>
+                <p class="text-muted">Try adjusting your preferences or skills to find more opportunities.</p>
+                <button class="btn btn-primary" onclick="scrollToForm()">
+                    <i class="bi bi-arrow-up me-2"></i>Modify Search
+                </button>
+            </div>
+
+            <!-- Back to Search Button -->
+            <div class="text-center mt-5">
+                <button class="btn btn-outline-primary btn-lg" onclick="resetSearch()">
+                    <i class="bi bi-arrow-left me-2"></i>New Search
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-5" id="how-it-works">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="h3 fw-bold text-primary mb-3">How Saarthi AI Works</h2>
+                <p class="text-muted">Simple steps to find your perfect internship</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 text-center">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <h4 class="h5 fw-semibold mb-3">Share Your Profile</h4>
+                        <p class="text-muted">Tell us about your education, interests, and skills</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 text-center">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-warning text-white rounded-circle mx-auto mb-3">
+                            <i class="bi bi-cpu-fill"></i>
+                        </div>
+                        <h4 class="h5 fw-semibold mb-3">AI Matches You</h4>
+                        <p class="text-muted">Our smart algorithm finds the best opportunities for you</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 text-center">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3">
+                            <i class="bi bi-card-list"></i>
+                        </div>
+                        <h4 class="h5 fw-semibold mb-3">Get Top 5 Matches</h4>
+                        <p class="text-muted">No overwhelm - just the most relevant opportunities</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 text-center">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-info text-white rounded-circle mx-auto mb-3">
+                            <i class="bi bi-file-earmark-person"></i>
+                        </div>
+                        <h4 class="h5 fw-semibold mb-3">Build Your Resume</h4>
+                        <p class="text-muted">Create a tailored resume for your chosen internship</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-2">
+                        <i class="bi bi-compass me-2"></i>Saarthi AI
+                    </h5>
+                    <p class="text-muted mb-0">Empowering India's youth with personalized career guidance</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 text-muted">
+                        Made with <i class="bi bi-heart-fill text-danger"></i> for India's future
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
