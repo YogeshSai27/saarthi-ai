@@ -64,16 +64,33 @@ def init_database():
     conn.commit()
     conn.close()
 
+# def load_internships_data():
+#     """Load internships data from CSV file"""
+#     global internships_df
+#     try:
+#         internships_df = pd.read_csv('data/internships.csv')
+#         print(f"✅ Loaded {len(internships_df)} internships from CSV")
+#         return True
+#     except Exception as e:
+#         print(f"❌ Error loading internships data: {e}")
+#         return False
+
+# for render
 def load_internships_data():
     """Load internships data from CSV file"""
     global internships_df
     try:
-        internships_df = pd.read_csv('data/internships.csv')
-        print(f"✅ Loaded {len(internships_df)} internships from CSV")
+        # Get directory of app.py
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        # Build path to CSV in 'data' folder
+        file_path = os.path.join(BASE_DIR, "data", "intersnhips.csv")
+        internships_df = pd.read_csv(file_path)
+        print(f"✅ Loaded {len(internships_df)} internships from CSV at {file_path}")
         return True
     except Exception as e:
         print(f"❌ Error loading internships data: {e}")
         return False
+
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     """Calculate distance between two coordinates using Haversine formula"""
