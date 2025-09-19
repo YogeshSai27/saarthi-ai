@@ -16,22 +16,24 @@ from fuzzywuzzy import fuzz
 import math
 import jwt
 from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 import io
-import sys
 import logging
-
-# Force logs to go to stdout (Render captures stdout in Application Logs)
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logger = logging.getLogger(__name__)
+import sys
 
 # -----------------------------
-# Setup logging
+# Setup logging for Render
 # -----------------------------
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.propagate = False
 
 # -----------------------------
 # Initialize Flask app
@@ -42,7 +44,7 @@ CORS(app)
 # -----------------------------
 # Configuration
 # -----------------------------
-app.config['SECRET_KEY'] = 'saarthi-ai-secret-key-2024'  # Change in production
+app.config['SECRET_KEY'] = 'saarthi-ai-secret-key-2024'
 app.config['DATABASE'] = 'database.db'
 
 # -----------------------------
@@ -54,11 +56,8 @@ internships_df = None
 # Database initialization
 # -----------------------------
 def init_database():
-    """Initialize SQLite database for save & share functionality"""
     conn = sqlite3.connect(app.config['DATABASE'])
     cursor = conn.cursor()
-
-    # Create table for saved search results
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS saved_results (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,8 +68,6 @@ def init_database():
             expires_at TIMESTAMP NOT NULL
         )
     ''')
-
-    # Create table for saved resumes
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS saved_resumes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,7 +78,6 @@ def init_database():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
-
     conn.commit()
     conn.close()
     logger.info("✅ Database initialized")
@@ -110,12 +106,11 @@ def load_internships_data():
         logger.error(f"❌ Error loading internships data: {e}")
         return False
 
-
 # -----------------------------
 # Haversine distance
 # -----------------------------
 def calculate_distance(lat1, lon1, lat2, lon2):
-    R = 6371  # Earth's radius in kilometers
+    R = 6371
     lat1_rad = math.radians(lat1)
     lon1_rad = math.radians(lon1)
     lat2_rad = math.radians(lat2)
@@ -127,7 +122,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     return R * c
 
 # -----------------------------
-# Matching score calculation
+# Matching score
 # -----------------------------
 def calculate_match_score(user_profile, internship):
     score = 0
@@ -143,12 +138,10 @@ def calculate_match_score(user_profile, internship):
     user_interests = user_profile.get('interests', [])
     if isinstance(user_interests, str):
         user_interests = [user_interests]
-    sector_match = False
     for interest in user_interests:
         if fuzz.partial_ratio(interest.lower(), internship['Sector_Interest'].lower()) > 70:
             score += 25
             explanations.append(f"Suggested because you're interested in {interest}")
-            sector_match = True
             break
 
     # Skills
@@ -181,23 +174,23 @@ def calculate_match_score(user_profile, internship):
                 score += 10
                 explanations.append("Reasonable commuting distance from your location")
 
-    # Role-based pro tips
+    # Role-based tips
     role_title_lower = internship['Role_Title'].lower()
     if 'data' in role_title_lower or 'analyst' in role_title_lower:
-        pro_tips.append("Pro Tip: This role often requires Advanced Excel and basic Python skills")
+        pro_tips.append("Pro Tip: Advanced Excel & basic Python skills recommended")
     elif 'marketing' in role_title_lower:
-        pro_tips.append("Pro Tip: Building a portfolio of social media campaigns will strengthen your application")
+        pro_tips.append("Pro Tip: Build a social media portfolio")
     elif 'banking' in role_title_lower or 'financial' in role_title_lower:
-        pro_tips.append("Pro Tip: Basic knowledge of banking regulations and Excel is highly valued")
+        pro_tips.append("Pro Tip: Know banking regulations & Excel")
     elif 'technology' in role_title_lower or 'digital' in role_title_lower:
-        pro_tips.append("Pro Tip: Familiarity with current digital trends and basic coding helps")
+        pro_tips.append("Pro Tip: Familiarity with digital trends & basic coding")
     elif 'research' in role_title_lower:
-        pro_tips.append("Pro Tip: Research methodology knowledge and report writing skills are essential")
+        pro_tips.append("Pro Tip: Research methodology & report writing skills essential")
 
     return score, explanations, pro_tips
 
 # -----------------------------
-# Coordinates mapping
+# Coordinates
 # -----------------------------
 def get_location_coordinates(location_name):
     city_coords = {
@@ -245,6 +238,7 @@ def search_internships():
                 return jsonify({'error': f'Missing required field: {field}'}), 400
 
         if internships_df is None:
+            logger.error("Internships data not loaded")
             return jsonify({'error': 'Internships data not loaded'}), 500
 
         matches = []
