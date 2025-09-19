@@ -80,15 +80,17 @@ def load_internships_data():
     """Load internships data from CSV file"""
     global internships_df
     try:
-        # Get directory of app.py
+        import os
+        import pandas as pd
+
+        # Absolute path to CSV
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        # Build absolute path to CSV in 'data' folder
         file_path = os.path.join(BASE_DIR, "data", "internships.csv")
-        
-        # Debug prints
+
+        # Debug logs to confirm
         print("CSV absolute path:", file_path)
         print("File exists?", os.path.exists(file_path))
-        
+
         # Load CSV
         internships_df = pd.read_csv(file_path)
         print(f"✅ Loaded {len(internships_df)} internships from CSV")
@@ -96,6 +98,7 @@ def load_internships_data():
     except Exception as e:
         print(f"❌ Error loading internships data: {e}")
         return False
+
 
 
 def calculate_distance(lat1, lon1, lat2, lon2):
