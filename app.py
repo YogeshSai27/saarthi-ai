@@ -20,7 +20,12 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 import io
+import sys
 import logging
+
+# Force logs to go to stdout (Render captures stdout in Application Logs)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # -----------------------------
 # Setup logging
@@ -85,13 +90,11 @@ def init_database():
 # Load internships CSV
 # -----------------------------
 def load_internships_data():
-    """Load internships data from CSV file with debug info for Render deployment"""
     global internships_df
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(BASE_DIR, "data", "internships.csv")
 
-    # Logging instead of print
     logger.info(f"DEBUG: CSV path: {file_path}")
     logger.info(f"DEBUG: File exists? {os.path.exists(file_path)}")
 
@@ -101,11 +104,12 @@ def load_internships_data():
 
     try:
         internships_df = pd.read_csv(file_path)
-        logger.info(f"✅ Loaded {len(internships_df)} internships from CSV")
+        logger.info(f"✅ Loaded {len(internships_df)} internships")
         return True
     except Exception as e:
         logger.error(f"❌ Error loading internships data: {e}")
         return False
+
 
 # -----------------------------
 # Haversine distance
