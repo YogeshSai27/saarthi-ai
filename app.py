@@ -82,10 +82,16 @@ def load_internships_data():
     try:
         # Get directory of app.py
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        # Build path to CSV in 'data' folder
-        file_path = os.path.join(BASE_DIR, "data", "intersnhips.csv")
+        # Build absolute path to CSV in 'data' folder
+        file_path = os.path.join(BASE_DIR, "data", "internships.csv")
+        
+        # Debug prints
+        print("CSV absolute path:", file_path)
+        print("File exists?", os.path.exists(file_path))
+        
+        # Load CSV
         internships_df = pd.read_csv(file_path)
-        print(f"✅ Loaded {len(internships_df)} internships from CSV at {file_path}")
+        print(f"✅ Loaded {len(internships_df)} internships from CSV")
         return True
     except Exception as e:
         print(f"❌ Error loading internships data: {e}")
