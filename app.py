@@ -88,8 +88,8 @@ def load_internships_data():
     file_path = os.path.join(BASE_DIR, "data", "internships.csv")
 
     # Logging for Render
-    logger.info(f"DEBUG: CSV path: {file_path}")
-    logger.info(f"DEBUG: File exists? {os.path.exists(file_path)}")
+    print(f"DEBUG: CSV path: {file_path}")
+    print(f"DEBUG: File exists? {os.path.exists(file_path)}")
 
     if not os.path.exists(file_path):
         logger.error("❌ ERROR: internships.csv not found. Exiting...")
@@ -97,7 +97,7 @@ def load_internships_data():
 
     try:
         internships_df = pd.read_csv(file_path)
-        logger.info(f"✅ Loaded {len(internships_df)} internships")
+        print(f"✅ Loaded {len(internships_df)} internships")
         return True
     except Exception as e:
         logger.error(f"❌ Error loading internships data: {e}")
