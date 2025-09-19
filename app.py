@@ -4,7 +4,7 @@ Saarthi AI - Flask Backend Application
 An empathetic ecosystem to guide India's underserved youth to their first professional opportunity
 """
 
-from flask import Flask, request, jsonify, render_template, send_file
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import pandas as pd
 import sqlite3
@@ -15,10 +15,6 @@ import os
 from fuzzywuzzy import fuzz
 import math
 import jwt
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-import io
 import logging
 import sys
 
@@ -27,7 +23,6 @@ import sys
 # -----------------------------
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
@@ -88,9 +83,11 @@ def init_database():
 def load_internships_data():
     global internships_df
 
+    # Absolute path detection
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(BASE_DIR, "data", "internships.csv")
 
+    # Logging for Render
     logger.info(f"DEBUG: CSV path: {file_path}")
     logger.info(f"DEBUG: File exists? {os.path.exists(file_path)}")
 
