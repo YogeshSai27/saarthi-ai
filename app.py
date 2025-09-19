@@ -79,25 +79,24 @@ def init_database():
 def load_internships_data():
     """Load internships data from CSV file"""
     global internships_df
-    try:
-        import os
-        import pandas as pd
+    import os
+    import pandas as pd
 
-        # Absolute path to CSV
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(BASE_DIR, "data", "internships.csv")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(BASE_DIR, "data", "internships.csv")
 
-        # Debug logs to confirm
-        print("CSV absolute path:", file_path)
-        print("File exists?", os.path.exists(file_path))
+    # Debug prints to check if Render sees the file
+    print("DEBUG: CSV path:", file_path)
+    print("DEBUG: File exists?", os.path.exists(file_path))
 
-        # Load CSV
-        internships_df = pd.read_csv(file_path)
-        print(f"✅ Loaded {len(internships_df)} internships from CSV")
-        return True
-    except Exception as e:
-        print(f"❌ Error loading internships data: {e}")
+    if not os.path.exists(file_path):
+        print("❌ ERROR: internships.csv not found. Exiting...")
         return False
+
+    internships_df = pd.read_csv(file_path)
+    print(f"✅ Loaded {len(internships_df)} internships")
+    return True
+
 
 
 
@@ -473,15 +472,12 @@ def generate_pdf():
 # Initialize application
 if __name__ == '__main__':
     print("🚀 Starting Saarthi AI Backend...")
-    
-    # Initialize database
     init_database()
     print("✅ Database initialized")
-    
-    # Load internships data
-    if load_internships_data():
-        print("✅ Ready to serve recommendations!")
-        app.run(debug=True, host='0.0.0.0', port=5000)
-    else:
-        print("❌ Failed to start - could not load internships data")
-        exit(1)
+
+    if not load_internships_data():
+        print("❌ Failed to load internships CSV. Exiting.")
+        exit(1)  # stop the app if CSV isn't loaded
+
+    print("✅ Ready to serve recommendations!")
+    app.run(debug=True, host='0.0.0.0', port=5000)
