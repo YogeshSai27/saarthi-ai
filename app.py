@@ -7,19 +7,11 @@ An empathetic ecosystem to guide India's underserved youth to their first profes
 from flask import Flask, request, jsonify, render_template, send_file
 from flask_cors import CORS
 import pandas as pd
-import sqlite3
-import hashlib
 import uuid
 from datetime import datetime, timedelta
-import os
+import os # <-- REQUIRED for robust pathing
 from fuzzywuzzy import fuzz
 import math
-import jwt
-from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-import io
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -27,71 +19,26 @@ CORS(app)  # Enable CORS for all routes
 
 # Configuration
 app.config['SECRET_KEY'] = 'saarthi-ai-secret-key-2024'  # Change in production
-app.config['DATABASE'] = 'database.db'
 
 # Global variables
 internships_df = None
-
-def init_database():
-    """Initialize SQLite database for save & share functionality"""
-    conn = sqlite3.connect(app.config['DATABASE'])
-    cursor = conn.cursor()
-    
-    # Create table for saved search results
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS saved_results (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            share_id TEXT UNIQUE NOT NULL,
-            user_data TEXT NOT NULL,
-            matched_internships TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            expires_at TIMESTAMP NOT NULL
-        )
-    ''')
-    
-    # Create table for saved resumes
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS saved_resumes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            resume_id TEXT UNIQUE NOT NULL,
-            user_id TEXT NOT NULL,
-            resume_data TEXT NOT NULL,
-            internship_id TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    conn.commit()
-    conn.close()
-
-# def load_internships_data():
-#     """Load internships data from CSV file"""
-#     global internships_df
-#     try:
-#         internships_df = pd.read_csv('data/internships.csv')
-#         print(f"✅ Loaded {len(internships_df)} internships from CSV")
-#         return True
-#     except Exception as e:
-#         print(f"❌ Error loading internships data: {e}")
-#         return False
 
 def load_internships_data():
     """Load internships data from CSV file using a robust path"""
     global internships_df
     try:
-        # Get the directory of the current file (app.py)
+        # Get the absolute directory path where the current file (app.py) is located
         base_dir = os.path.dirname(os.path.abspath(__file__))
         
-        # Construct the absolute path to the CSV file
-        # ASSUMING your directory is named 'data' and the file is 'internships.csv'
+        # Construct the absolute path: <base_dir>/data/internships.csv
         csv_path = os.path.join(base_dir, 'data', 'internships.csv')
         
         internships_df = pd.read_csv(csv_path)
         print(f"✅ Loaded {len(internships_df)} internships from CSV at {csv_path}")
         return True
     except Exception as e:
-        # Crucial to print the error in the server logs!
-        print(f"❌ FATAL Error loading internships data. Path: {csv_path}. Error: {e}")
+        # CRITICAL for debugging: This will print the exact path failure in Render logs
+        print(f"❌ FATAL Error loading data. Tried path: {csv_path}. Error: {e}")
         return False
 
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -211,7 +158,7 @@ def get_location_coordinates(location_name):
             return coords
     return None
 
-# @app.route('/apply-test')
+# @app.route('/apply-test') - Route commented out
 # def apply_test():
 #     return render_template('apply-test.html')
 
@@ -239,7 +186,7 @@ def search_internships():
         
         # Calculate match scores for all internships
         matches = []
-        for index, internship in internships_df.iterrows():
+        for index, internship in internships_df.iterrows(): # <-- Now safe because internships_df is loaded
             score, explanations, pro_tips = calculate_match_score(user_data, internship)
             
             if score > 10:  # Only include reasonable matches
@@ -266,8 +213,9 @@ def search_internships():
         matches.sort(key=lambda x: x['match_score'], reverse=True)
         top_matches = matches[:5]
         
-        # Generate shareable link
-        share_id = generate_share_link(user_data, top_matches)
+        # Placeholder for share_id generation (removed DB dependency)
+        # share_id = generate_share_link(user_data, top_matches) 
+        share_id = str(uuid.uuid4()) 
         
         return jsonify({
             'success': True,
@@ -308,58 +256,7 @@ def get_internship_details(internship_id):
     except Exception as e:
         return jsonify({'error': f'Failed to fetch internship: {str(e)}'}), 500
 
-def generate_share_link(user_data, matches):
-    """Generate a unique shareable link for search results"""
-    try:
-        share_id = str(uuid.uuid4())
-        expires_at = datetime.now() + timedelta(days=30)  # Link expires in 30 days
-        
-        conn = sqlite3.connect(app.config['DATABASE'])
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            INSERT INTO saved_results (share_id, user_data, matched_internships, expires_at)
-            VALUES (?, ?, ?, ?)
-        ''', (share_id, str(user_data), str(matches), expires_at))
-        
-        conn.commit()
-        conn.close()
-        
-        return share_id
-        
-    except Exception as e:
-        print(f"Error generating share link: {e}")
-        return None
-
-@app.route('/api/shared/<share_id>')
-def get_shared_results(share_id):
-    """Retrieve shared search results"""
-    try:
-        conn = sqlite3.connect(app.config['DATABASE'])
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            SELECT user_data, matched_internships, created_at, expires_at
-            FROM saved_results 
-            WHERE share_id = ? AND expires_at > CURRENT_TIMESTAMP
-        ''', (share_id,))
-        
-        result = cursor.fetchone()
-        conn.close()
-        
-        if not result:
-            return jsonify({'error': 'Shared link not found or expired'}), 404
-        
-        return jsonify({
-            'success': True,
-            'user_data': eval(result[0]),  # Convert string back to dict
-            'matches': eval(result[1]),    # Convert string back to list
-            'created_at': result[2],
-            'expires_at': result[3]
-        })
-        
-    except Exception as e:
-        return jsonify({'error': f'Failed to retrieve shared results: {str(e)}'}), 500
+# Removed all /api/shared/<share_id> and database functions
 
 @app.route('/api/health')
 def health_check():
@@ -371,109 +268,23 @@ def health_check():
         'total_internships': len(internships_df) if internships_df is not None else 0
     })
 
-# New PDF generation endpoint
-@app.route('/api/generate_pdf', methods=['POST'])
-def generate_pdf():
-    """Generate PDF resume from form data"""
-    try:
-        data = request.get_json()
-        if not data or 'name' not in data:
-            return jsonify({'error': 'Missing required fields'}), 400
+# Removed the entire /api/generate_pdf route
 
-        # Prepare PDF buffer
-        buffer = io.BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=72)
-        styles = getSampleStyleSheet()
-        story = []
+# ----------------------------------------------------------------------
+# DEPLOYMENT FIX: Initialize Data on Module Load (Outside __main__)
+# ----------------------------------------------------------------------
 
-        # Title (Name)
-        title_style = ParagraphStyle(name='Title', parent=styles['Heading1'], fontSize=24, alignment=1)
-        story.append(Paragraph(data['name'] or 'Your Name', title_style))
-        story.append(Spacer(1, 12))
+# Load internships data - This runs immediately when Gunicorn imports app.py
+if not load_internships_data():
+    # If loading fails, crash the deployment with a clear error
+    raise RuntimeError("Deployment Failed: Could not load data/internships.csv.")
 
-        # Contact Info
-        contact_style = ParagraphStyle(name='Contact', parent=styles['Normal'], fontSize=12, alignment=1)
-        contact_parts = []
-        if data['github']:
-            contact_parts.append(f'<a href="https://github.com/{data["github"]}" color="blue">{data["github"]}</a>')
-        if data['linkedin']:
-            contact_parts.append(f'<a href="https://linkedin.com/in/{data["linkedin"]}" color="blue">{data["linkedin"]}</a>')
-        if data['email']:
-            contact_parts.append(f'<a href="mailto:{data["email"]}" color="blue">{data["email"]}</a>')
-        if data['phone']:
-            contact_parts.append(f'<a href="tel:{data["phone"]}" color="blue">{data["phone"]}</a>')
-        if contact_parts:
-            story.append(Paragraph(' | '.join(contact_parts), contact_style))
-        story.append(Spacer(1, 12))
+# Print is for Render logs
+print("✅ Ready to serve recommendations!")
 
-        # Summary
-        if data['summary']:
-            summary_style = ParagraphStyle(name='Summary', parent=styles['Normal'], fontSize=12)
-            story.append(Paragraph('<b>Summary</b>', summary_style))
-            story.append(Paragraph(data['summary'].replace('\n', '<br/>'), summary_style))
-            story.append(Spacer(1, 12))
-
-        # Work Experience
-        if data['experience']:
-            exp_style = ParagraphStyle(name='Experience', parent=styles['Normal'], fontSize=12)
-            story.append(Paragraph('<b>Work Experience</b>', exp_style))
-            for line in data['experience'].split('\n'):
-                if line.strip():
-                    story.append(Paragraph(line.strip(), exp_style))
-            story.append(Spacer(1, 12))
-
-        # Projects
-        if data['projects']:
-            proj_style = ParagraphStyle(name='Projects', parent=styles['Normal'], fontSize=12)
-            story.append(Paragraph('<b>Projects</b>', proj_style))
-            for line in data['projects'].split('\n'):
-                if line.strip():
-                    link_match = line.split(':')
-                    if len(link_match) > 1 and 'GitHub link' in line:
-                        title = link_match[0].strip()
-                        link_desc = link_match[1].strip()
-                        link = link_desc.replace('GitHub link: ', '')
-                        story.append(Paragraph(f"{title} <a href='{link}' color='blue'>GitHub link</a>", proj_style))
-                    else:
-                        story.append(Paragraph(line.strip(), proj_style))
-            story.append(Spacer(1, 12))
-
-        # Education
-        if data['education']:
-            edu_style = ParagraphStyle(name='Education', parent=styles['Normal'], fontSize=12)
-            story.append(Paragraph('<b>Education</b>', edu_style))
-            for line in data['education'].split('\n'):
-                if line.strip():
-                    story.append(Paragraph(line.strip(), edu_style))
-            story.append(Spacer(1, 12))
-
-        # Skills
-        if data['skills']:
-            skills_style = ParagraphStyle(name='Skills', parent=styles['Normal'], fontSize=12)
-            story.append(Paragraph('<b>Skills</b>', skills_style))
-            story.append(Paragraph(', '.join(data['skills'].split(',')), skills_style))
-
-        # Build PDF
-        doc.build(story)
-        buffer.seek(0)
-
-        return send_file(buffer, as_attachment=True, download_name=f"{data['name'] or 'Resume'}.pdf", mimetype='application/pdf')
-
-    except Exception as e:
-        print(f"Error generating PDF: {e}")
-        return jsonify({'error': 'Failed to generate PDF'}), 500
-
-    # Initialize database
-    init_database()
-    print("✅ Database initialized")
-
-    
-    # Load internships data
-    if not load_internships_data():
-         raise RuntimeError("Deployment Failed: Could not load data/internships.csv.")
-    
-# Initialize application
+# Original if __name__ block (Only for local development)
 if __name__ == '__main__':
-    print("🚀 Starting Saarthi AI Backend...")
+    # This block is only for when you run 'python app.py' locally
     app.run(debug=True, host='0.0.0.0', port=5000)
-    
+
+# END OF FILE
