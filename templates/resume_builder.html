@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saarthi AI - Resume Builder</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <!-- Font Awesome for social icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-compass me-2"></i>Saarthi AI
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Back to Search</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Form Column -->
+                <div class="col-lg-6">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-4 p-md-5">
+                            <h2 class="h3 fw-bold text-primary mb-3">Build Your Resume</h2>
+                            <p class="text-muted mb-4" id="context-info">
+                                Crafting resume for: <span id="job-title">Loading...</span>
+                            </p>
+                            <form id="resumeForm" class="needs-validation" novalidate>
+                                <!-- Name -->
+                                <div class="mb-3">
+                                    <label for="name" class="form-label fw-semibold">
+                                        <i class="bi bi-person me-2"></i>Full Name
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="name" required
+                                           placeholder="e.g., Yogesh Sharma" aria-label="Full Name">
+                                    <div class="invalid-feedback">
+                                        Please enter your name.
+                                    </div>
+                                </div>
+                                <!-- Email -->
+                                <div class="mb-3">
+                                    <label for="email" class="form-label fw-semibold">
+                                        <i class="bi bi-envelope me-2"></i>Email
+                                    </label>
+                                    <input type="email" class="form-control form-control-lg" id="email" required
+                                           placeholder="e.g., yogesh@example.com" aria-label="Email">
+                                    <div class="invalid-feedback">
+                                        Please enter a valid email.
+                                    </div>
+                                </div>
+                                <!-- Phone -->
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label fw-semibold">
+                                        <i class="bi bi-phone me-2"></i>Phone
+                                    </label>
+                                    <input type="tel" class="form-control form-control-lg" id="phone"
+                                           placeholder="e.g., +91 9876543210" aria-label="Phone">
+                                </div>
+                                <!-- GitHub -->
+                                <div class="mb-3">
+                                    <label for="github" class="form-label fw-semibold">
+                                        <i class="fab fa-github me-2"></i>GitHub Username
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="github"
+                                           placeholder="e.g., ysharma" aria-label="GitHub Username">
+                                </div>
+                                <!-- LinkedIn -->
+                                <div class="mb-3">
+                                    <label for="linkedin" class="form-label fw-semibold">
+                                        <i class="fab fa-linkedin me-2"></i>LinkedIn Username
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="linkedin"
+                                           placeholder="e.g., ysharma" aria-label="LinkedIn Username">
+                                </div>
+                                <!-- Summary -->
+                                <div class="mb-3">
+                                    <label for="summary" class="form-label fw-semibold">
+                                        <i class="bi bi-file-text me-2"></i>Summary
+                                    </label>
+                                    <textarea class="form-control form-control-lg" id="summary" rows="3"
+                                              placeholder="e.g., Seeking a role to apply my skills in..." aria-label="Summary"></textarea>
+                                </div>
+                                <!-- Education -->
+                                <div class="mb-3">
+                                    <label for="education" class="form-label fw-semibold">
+                                        <i class="bi bi-mortarboard me-2"></i>Education
+                                    </label>
+                                    <textarea class="form-control form-control-lg" id="education" rows="4"
+                                              placeholder="e.g., B.Tech in Computer Science, XYZ University, 2020-2024 (GPA: 8.0/10)"
+                                              aria-label="Education"></textarea>
+                                </div>
+                                <!-- Work Experience -->
+                                <div class="mb-3">
+                                    <label for="experience" class="form-label fw-semibold">
+                                        <i class="bi bi-briefcase me-2"></i>Work Experience
+                                    </label>
+                                    <textarea class="form-control form-control-lg" id="experience" rows="4"
+                                              placeholder="e.g., Project Intern, ABC Corp, June 2023 - Aug 2023: Developed web app"
+                                              aria-label="Work Experience"></textarea>
+                                </div>
+                                <!-- Skills -->
+                                <div class="mb-3">
+                                    <label for="skills" class="form-label fw-semibold">
+                                        <i class="bi bi-tools me-2"></i>Skills
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="skills"
+                                           placeholder="e.g., Python, Excel, Communication" aria-label="Skills">
+                                </div>
+                                <!-- Projects -->
+                                <div class="mb-3">
+                                    <label for="projects" class="form-label fw-semibold">
+                                        <i class="bi bi-code-slash me-2"></i>Projects
+                                    </label>
+                                    <textarea class="form-control form-control-lg" id="projects" rows="4"
+                                              placeholder="e.g., Web App, GitHub link: Built a task manager using Python"
+                                              aria-label="Projects"></textarea>
+                                </div>
+                                <!-- Pro Tip -->
+                                <div class="pro-tip d-none" id="pro-tip-section">
+                                    <p class="pro-tip-content" id="pro-tip-text"></p>
+                                </div>
+                                <!-- Action Buttons -->
+                                <div class="d-flex flex-wrap gap-2 mt-4">
+                                    <button type="button" class="btn btn-primary" id="saveVersion">
+                                        <i class="bi bi-save me-2"></i>Save Version
+                                    </button>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="loadVersion"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-folder me-2"></i>Load Version
+                                        </button>
+                                        <ul class="dropdown-menu" id="versionList"></ul>
+                                    </div>
+                                    <button type="button" class="btn btn-success" id="downloadPDF">
+                                        <i class="bi bi-download me-2"></i>Download PDF
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Preview Column -->
+                <div class="col-lg-6">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-4 p-md-5">
+                            <h2 class="h3 fw-bold text-primary mb-3">Live Preview</h2>
+                            <div id="resumePreview" class="p-4 bg-white">
+                                <h1 id="previewName" class="text-center">Your Name</h1>
+                                <p id="previewContact" class="text-center contact-links"></p>
+                                <section>
+                                    <h3 class="section-title">Summary</h3>
+                                    <p id="previewSummary"></p>
+                                </section>
+                                <section>
+                                    <h3 class="section-title">Work Experience</h3>
+                                    <div id="previewExperience"></div>
+                                </section>
+                                <section>
+                                    <h3 class="section-title">Projects</h3>
+                                    <div id="previewProjects"></div>
+                                </section>
+                                <section>
+                                    <h3 class="section-title">Education</h3>
+                                    <div id="previewEducation"></div>
+                                </section>
+                                <section>
+                                    <h3 class="section-title">Skills</h3>
+                                    <ul id="previewSkills"></ul>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;" aria-live="polite"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/resume.js') }}"></script>
+</body>
+</html>
