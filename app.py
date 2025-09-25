@@ -64,15 +64,34 @@ def init_database():
     conn.commit()
     conn.close()
 
+# def load_internships_data():
+#     """Load internships data from CSV file"""
+#     global internships_df
+#     try:
+#         internships_df = pd.read_csv('data/internships.csv')
+#         print(f"✅ Loaded {len(internships_df)} internships from CSV")
+#         return True
+#     except Exception as e:
+#         print(f"❌ Error loading internships data: {e}")
+#         return False
+
 def load_internships_data():
-    """Load internships data from CSV file"""
+    """Load internships data from CSV file using a robust path"""
     global internships_df
     try:
-        internships_df = pd.read_csv('data/internships.csv')
-        print(f"✅ Loaded {len(internships_df)} internships from CSV")
+        # Get the directory of the current file (app.py)
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Construct the absolute path to the CSV file
+        # ASSUMING your directory is named 'data' and the file is 'internships.csv'
+        csv_path = os.path.join(base_dir, 'data', 'internships.csv')
+        
+        internships_df = pd.read_csv(csv_path)
+        print(f"✅ Loaded {len(internships_df)} internships from CSV at {csv_path}")
         return True
     except Exception as e:
-        print(f"❌ Error loading internships data: {e}")
+        # Crucial to print the error in the server logs!
+        print(f"❌ FATAL Error loading internships data. Path: {csv_path}. Error: {e}")
         return False
 
 def calculate_distance(lat1, lon1, lat2, lon2):
