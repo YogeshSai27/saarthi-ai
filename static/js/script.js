@@ -1242,14 +1242,31 @@ function displaySearchResults(results) {
         noResultsDiv.classList.add('d-none');
         resultsContainer.innerHTML = results.matches.map((internship, index) => createInternshipCard(internship, index)).join('');
 
-        // Attach event listeners to the buttons for the modals/actions
+        // // Attach event listeners to the buttons for the modals/actions
+        // document.querySelectorAll('.build-resume-btn').forEach(button => {
+        //     button.addEventListener('click', (e) => {
+        //         e.preventDefault();
+        //         showToast('Resume Builder feature is part of our future scope! It will allow you to generate a custom resume.', 'info');
+        //     });
+        // });
+
+        // document.querySelectorAll('.apply-now-btn').forEach(button => {
+        //     button.addEventListener('click', (e) => {
+        //         e.preventDefault();
+        //         showApplyNowModal();
+        //     });
+        // });
+
+        // Re-enable the Build Resume button's functionality
         document.querySelectorAll('.build-resume-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                showToast('Resume Builder feature is part of our future scope! It will allow you to generate a custom resume.', 'info');
+            button.addEventListener('click', () => {
+                // This saves the ID and redirects to the resume builder page
+                sessionStorage.setItem('selectedInternshipId', button.getAttribute('data-internship-id'));
+                window.location.href = '/resume-builder';
             });
         });
 
+        // Keep the Apply Now button showing the modal for stability
         document.querySelectorAll('.apply-now-btn').forEach(button => {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
