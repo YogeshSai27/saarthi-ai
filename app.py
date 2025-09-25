@@ -444,18 +444,17 @@ def generate_pdf():
         print(f"Error generating PDF: {e}")
         return jsonify({'error': 'Failed to generate PDF'}), 500
 
-# Initialize application
-if __name__ == '__main__':
-    print("🚀 Starting Saarthi AI Backend...")
-    
     # Initialize database
     init_database()
     print("✅ Database initialized")
+
     
     # Load internships data
-    if load_internships_data():
-        print("✅ Ready to serve recommendations!")
-        app.run(debug=True, host='0.0.0.0', port=5000)
-    else:
-        print("❌ Failed to start - could not load internships data")
-        exit(1)
+    if not load_internships_data():
+         raise RuntimeError("Deployment Failed: Could not load data/internships.csv.")
+    
+# Initialize application
+if __name__ == '__main__':
+    print("🚀 Starting Saarthi AI Backend...")
+    app.run(debug=True, host='0.0.0.0', port=5000)
+    
